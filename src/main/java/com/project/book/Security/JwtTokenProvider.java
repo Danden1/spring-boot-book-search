@@ -2,6 +2,10 @@ package com.project.book.Security;
 
 import org.springframework.stereotype.Component;
 
+import com.project.book.Exception.AccessExpireException;
+import com.project.book.Exception.MyException;
+import com.project.book.Exception.RefreshExpireException;
+
 import java.util.Date;
 import java.util.Base64;
 
@@ -9,14 +13,18 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
@@ -82,6 +90,35 @@ public class JwtTokenProvider {
     public String getEmail(String token){
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
     }
+
+    public String resolveToken(HttpServletRequest req){
+        String token = req.getHeader("X-Auth-Token");
+        if(token != null){
+            return token;
+        }
+
+        return null;
+    }
     
-    
+    public boolean validateAccessToken(String token){
+        try{
+            Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+            return true;
+        } catch(ExpiredJwtException e){
+            throw new AccessExpireException();
+        } catch (JwtException | IllegalArgumentException e){
+            throw new MyException("Invalid Token", HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    public boolean validateRefreshToken(String token){
+        try{
+            Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+            return true;
+        } catch(ExpiredJwtException e){
+            throw new RefreshExpireException();
+        } catch (JwtException | IllegalArgumentException e){
+            throw new MyException("Invalid Token", HttpStatus.UNAUTHORIZED);
+        }
+    }
 }
