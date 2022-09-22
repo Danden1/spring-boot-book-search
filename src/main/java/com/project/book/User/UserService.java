@@ -43,9 +43,10 @@ public class UserService {
         }
     }
 
-    public void signup(String email, String pwd, String name){
+    //this project use not admin role.
+    public Integer signup(String email, String pwd, String name){
         MyUser user = userRepository.findByEmail(email);
-
+        UserRole userRole = UserRole.valueOf("ROLE_CLIENT");
         if(user != null){
             throw new MyException("already exist email", HttpStatus.UNPROCESSABLE_ENTITY);
         }
@@ -56,10 +57,14 @@ public class UserService {
         catch(Exception ex){
             throw new MyException(ex.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
         }
+
         user.setName(name);
         user.setPwd(pwd);
+        user.setUserRole(userRole);
     
         userRepository.save(user);
+
+        return user.getId();
     }
 
     
