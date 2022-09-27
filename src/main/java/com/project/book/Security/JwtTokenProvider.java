@@ -93,6 +93,7 @@ public class JwtTokenProvider {
 
     public String resolveToken(HttpServletRequest req){
         String token = req.getHeader("X-Auth-Token");
+        System.out.println(token);
         if(token != null){
             return token;
         }
@@ -116,7 +117,7 @@ public class JwtTokenProvider {
             Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
             return true;
         } catch(ExpiredJwtException e){
-            throw new RefreshExpireException();
+            throw new RefreshExpireException(token);
         } catch (JwtException | IllegalArgumentException e){
             throw new MyException("Invalid Token", HttpStatus.UNAUTHORIZED);
         }

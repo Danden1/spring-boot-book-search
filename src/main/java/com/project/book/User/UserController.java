@@ -1,5 +1,6 @@
 package com.project.book.User;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.catalina.connector.Response;
@@ -57,11 +58,34 @@ public class UserController {
         String pwd2 = reqBody.get("pwd2").toString();
         String name = reqBody.get("name").toString();
 
-        if(pwd1 != pwd2){
+        if(!pwd1.equals(pwd2)){
             throw new MyException("not same pwd", HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
         return new ResponseEntity<Integer>(userService.signup(email, pwd1, name), HttpStatus.OK);
+    }
+
+    @PostMapping("/token")
+    public ResponseEntity<Map<String, String>> refreshToken(@RequestBody Map<String,Object> reqBody) {
+        String refreshToken = reqBody.get("refresh_token").toString();
+        String accessToken = reqBody.get("access_token").toString();
+
+        if(userService.validRefreshToken(accessToken, refreshToken)){
+            accessToken = userService.updateAccessToken(refreshToken);
+        }
+        else{
+            throw new MyException("invalid token.", HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+        
+        Map<String, String> response = new HashMap<>();
+        response.put("access_token", accessToken);
+        
+        return new ResponseEntity<Map<String,String>>(response, HttpStatus.OK);
+    }
+    
+    @GetMapping("/test")
+    public ResponseEntity<String> test(){
+        return new ResponseEntity<String>("hi", HttpStatus.OK);
     }
     
 }

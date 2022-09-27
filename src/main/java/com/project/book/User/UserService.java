@@ -24,7 +24,7 @@ public class UserService {
     public JwtToken login(String email, String pwd){
         MyUser user = userRepository.findByEmail(email);
 
-        if(user != null && user.getPwd() == pwd){
+        if(user != null && user.getPwd().equals(pwd)){
             String accessToken = jwtTokenProvider.createAccessToken(email); 
             String refreshToken = jwtTokenProvider.createRefreshToken(email);
 
@@ -50,7 +50,8 @@ public class UserService {
         if(user != null){
             throw new MyException("already exist email", HttpStatus.UNPROCESSABLE_ENTITY);
         }
-        
+        user = new MyUser();
+
         try{
             user.setEmail(email);
         }
@@ -65,6 +66,34 @@ public class UserService {
         userRepository.save(user);
 
         return user.getId();
+    }
+
+    public boolean validRefreshToken(String accessToken, String refreshToken){
+        JwtToken jwtToken = jwtTokenRepository.findByaccessToken(accessToken);
+
+        if(jwtToken != null && jwtToken.getRefreshToken().equals(refreshToken)){
+            if(jwtTokenProvider.validateRefreshToken(refreshToken)){
+
+            }
+            return true;
+        }
+        else{
+            return false;
+        }
+
+    }
+
+    public String updateAccessToken(String refreshToken){
+        String email = jwtTokenProvider.getEmail(refreshToken);
+        String accessToken = jwtTokenProvider.createAccessToken(email);
+
+        JwtToken jwtToken = jwtTokenRepository.findByrefreshToken(refreshToken);
+        jwtToken.setAccessToken(accessToken);
+
+        jwtTokenRepository.save(jwtToken);
+
+        return accessToken;
+
     }
 
     
