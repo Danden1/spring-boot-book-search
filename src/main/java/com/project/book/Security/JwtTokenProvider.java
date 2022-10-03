@@ -93,7 +93,7 @@ public class JwtTokenProvider {
 
     public String resolveToken(HttpServletRequest req){
         String token = req.getHeader("X-Auth-Token");
-        System.out.println(token);
+
         if(token != null){
             return token;
         }

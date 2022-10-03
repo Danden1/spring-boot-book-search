@@ -3,6 +3,8 @@ package com.project.book.Exception;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -32,8 +34,11 @@ public class GlobalExceptionHandler {
     // }
 
     @ExceptionHandler(MyException.class)
-    public ResponseEntity handleMyException(HttpServletResponse res, MyException ex) throws IOException{
-        return ResponseEntity.status(ex.getHttpStatus()).body(ex.getMessage());
+    public ResponseEntity<Map<String, Object>> handleMyException(HttpServletResponse res, MyException ex) throws IOException{
+        Map<String,Object> map = new HashMap<>();
+        map.put("error_message", ex.getMessage());
+
+        return ResponseEntity.status(ex.getHttpStatus()).body(map);
     }
 
     @ExceptionHandler(RefreshExpireException.class)

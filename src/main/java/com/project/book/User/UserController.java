@@ -17,6 +17,9 @@ import com.project.book.Exception.MyException;
 import com.project.book.Security.JwtToken;
 import com.project.book.Security.JwtTokenDTO;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 
 
@@ -24,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/users")
+@Api("user controller")
 public class UserController {
 
     private final UserService userService;
@@ -35,9 +39,9 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<JwtTokenDTO> postLogin(@RequestBody Map<String, Object> reqBody){
-        String email = reqBody.get("email").toString();
-        String pwd = reqBody.get("pwd").toString();
+    public ResponseEntity<JwtTokenDTO> postLogin(@RequestBody UserDTO reqBody){
+        String email = reqBody.getEmail();
+        String pwd = reqBody.getPwd();
         JwtToken token;
         
         token = userService.login(email, pwd);
@@ -52,35 +56,40 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<Integer> postSignup(@RequestBody Map<String, Object> reqBody){
-        String email = reqBody.get("email").toString();
-        String pwd1 = reqBody.get("pwd1").toString();
-        String pwd2 = reqBody.get("pwd2").toString();
-        String name = reqBody.get("name").toString();
+    public ResponseEntity<UserResponseDTO> postSignup(@RequestBody SignupDTO reqBody){
+        String email = reqBody.getEmail();
+        String pwd1 = reqBody.getPwd1();
+        String pwd2 = reqBody.getPwd2();
+        String name = reqBody.getName();
+        MyUser user;
+
 
         if(!pwd1.equals(pwd2)){
             throw new MyException("not same pwd", HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
-        return new ResponseEntity<Integer>(userService.signup(email, pwd1, name), HttpStatus.OK);
+        
+        user = userService.signup(email, pwd1, name);
+
+        return new ResponseEntity<>(modelMapper.map(user, UserResponseDTO.class), HttpStatus.OK);
     }
 
     @PostMapping("/token")
-    public ResponseEntity<Map<String, String>> refreshToken(@RequestBody Map<String,Object> reqBody) {
-        String refreshToken = reqBody.get("refresh_token").toString();
-        String accessToken = reqBody.get("access_token").toString();
+    public ResponseEntity<JwtTokenDTO> refreshToken(@RequestBody JwtTokenDTO reqBody) {
+        String refreshToken = reqBody.getAccessToken();
+        String accessToken = reqBody.getRefreshToken();
+
+        JwtToken jwtToken; 
 
         if(userService.validRefreshToken(accessToken, refreshToken)){
-            accessToken = userService.updateAccessToken(refreshToken);
+            jwtToken = userService.updateToken(accessToken, refreshToken);
         }
         else{
             throw new MyException("invalid token.", HttpStatus.UNPROCESSABLE_ENTITY);
         }
         
-        Map<String, String> response = new HashMap<>();
-        response.put("access_token", accessToken);
         
-        return new ResponseEntity<Map<String,String>>(response, HttpStatus.OK);
+        return new ResponseEntity<JwtTokenDTO>(modelMapper.map(jwtToken, JwtTokenDTO.class), HttpStatus.OK);
     }
     
     @GetMapping("/test")

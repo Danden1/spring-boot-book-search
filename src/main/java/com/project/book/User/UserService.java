@@ -44,7 +44,7 @@ public class UserService {
     }
 
     //this project use not admin role.
-    public Integer signup(String email, String pwd, String name){
+    public MyUser signup(String email, String pwd, String name){
         MyUser user = userRepository.findByEmail(email);
         UserRole userRole = UserRole.valueOf("ROLE_CLIENT");
         if(user != null){
@@ -65,7 +65,7 @@ public class UserService {
     
         userRepository.save(user);
 
-        return user.getId();
+        return user;
     }
 
     public boolean validRefreshToken(String accessToken, String refreshToken){
@@ -83,16 +83,24 @@ public class UserService {
 
     }
 
-    public String updateAccessToken(String refreshToken){
+    public JwtToken updateToken(String accessToken, String refreshToken){
         String email = jwtTokenProvider.getEmail(refreshToken);
-        String accessToken = jwtTokenProvider.createAccessToken(email);
 
         JwtToken jwtToken = jwtTokenRepository.findByrefreshToken(refreshToken);
+
+        if(jwtToken == null || jwtToken.getAccessToken() != accessToken){
+            throw new MyException("fail update token. login again.", HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
+        accessToken = jwtTokenProvider.createAccessToken(email);
+        refreshToken = jwtTokenProvider.createRefreshToken(email);
+        
         jwtToken.setAccessToken(accessToken);
+        jwtToken.setRefreshToken(refreshToken);
 
         jwtTokenRepository.save(jwtToken);
 
-        return accessToken;
+        return jwtToken;
 
     }
 

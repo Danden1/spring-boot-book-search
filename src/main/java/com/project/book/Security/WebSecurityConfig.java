@@ -35,6 +35,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
             .antMatchers("/users/login").permitAll()
             .antMatchers("/users/signup").permitAll()
             .antMatchers("/h2-console/**").permitAll() 
+            .antMatchers("/swagger-ui.html").permitAll()
+            .antMatchers("/swagger-ui/**").permitAll()
+            .antMatchers("/users/refresh").permitAll()
             .anyRequest().authenticated()
         .and()
             .csrf()
@@ -57,6 +60,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 
     public void configure(WebSecurity web)throws Exception{
         web.ignoring().antMatchers("/h2-console/**");
+        web.ignoring().antMatchers("/v2/api-docs/**");
+        web.ignoring().antMatchers("/swagger.json");
+        web.ignoring().antMatchers("/swagger-ui.html");
+        web.ignoring().antMatchers("/swagger-resources/**");
+        web.ignoring().antMatchers("/webjars/**",  "/configuration/security", "/configuration/ui");
+        
     }
     
 }
