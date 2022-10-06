@@ -30,7 +30,10 @@ public class JwtFilter extends OncePerRequestFilter{
 
         //token이 널인 경우엔는 에러를 발생하지 않도록 하는 filter하나 더?
         try{
-            if(token != null && jwtTokenProvider.validateAccessToken(token)){
+            if(token == null){
+                
+            }
+            else if(jwtTokenProvider.validateAccessToken(token)){
                 Authentication auth = jwtTokenProvider.getAuthentication(token);
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
