@@ -1,11 +1,18 @@
 package com.project.book.User;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.Size;
+
+import com.project.book.Book.History;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 
@@ -39,5 +46,9 @@ public class MyUser {
 
     @Column
     private UserRole userRole;
+
+    @JoinColumn(name = "id")
+    @OneToMany
+    private List<History> history;
     
 }

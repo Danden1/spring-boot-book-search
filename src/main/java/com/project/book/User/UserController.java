@@ -67,7 +67,7 @@ public class UserController {
 
 
         if(!pwd1.equals(pwd2)){
-            throw new MyException("not same pwd", HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new MyException("same not pwd", HttpStatus.UNPROCESSABLE_ENTITY);
         }
 
         
@@ -87,7 +87,7 @@ public class UserController {
             jwtToken = userService.updateToken(accessToken, refreshToken);
         }
         else{
-            throw new MyException("invalid token.", HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new MyException("invalid refresh token.", HttpStatus.UNPROCESSABLE_ENTITY);
         }
         
         

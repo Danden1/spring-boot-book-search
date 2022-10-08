@@ -88,6 +88,9 @@ public class JwtTokenProvider {
     }
 
     public String getEmail(String token){
+        if(token == null){
+            return null;
+        }
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
     }
 
