@@ -1,7 +1,10 @@
 package com.project.book.Book;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +24,9 @@ public class BookSearchService {
     final private RankRepository rankRepository;
     final private UserRepository userRepository;
     final private JwtTokenProvider jwtTokenProvider;
+    
+    @Value("${rank.keyword-number}")
+    private int keywordNumber;
 
 
     public void saveKeyword(String keyword, String token){
@@ -30,7 +36,7 @@ public class BookSearchService {
         if(user == null){
             throw new MyException("not exist user", HttpStatus.UNPROCESSABLE_ENTITY);
         }
-        history = historyRepository.findByMyUser_userIdAndKeyword(user.getId(), keyword);
+        history = historyRepository.findByUserIdAndKeyword(user.getId(), keyword);
         
         if(history == null){
             history = new History();
@@ -61,6 +67,27 @@ public class BookSearchService {
 
         }
         rankRepository.save(rank);
+    }
+
+    public List<Rank> getRank(){
+        List<Rank> rankList = rankRepository.findByOrderByCountAsc();
+
+        if(rankList != null && rankList.size() > this.keywordNumber){
+            rankList = new ArrayList<>(rankList.subList(0, this.keywordNumber));
+        }
+
+        return rankList;
+    }
+
+    public List<History> getHistory(String token){
+        MyUser user = userRepository.findByEmail(jwtTokenProvider.getEmail(token));
+        List<History> historyList = historyRepository.findByUserIdOrderBySearchTimeAsc(user.getId());
+
+        if(historyList != null && historyList.size() > this.keywordNumber){
+            historyList = new ArrayList<>(historyList.subList(0, this.keywordNumber));
+        }
+
+        return historyList;
     }
 
     

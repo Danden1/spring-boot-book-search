@@ -47,8 +47,4 @@ public class MyUser {
     @Column
     private UserRole userRole;
 
-    @JoinColumn(name = "id")
-    @OneToMany
-    private List<History> history;
-    
 }
