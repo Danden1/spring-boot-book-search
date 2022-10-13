@@ -10,7 +10,7 @@ public class RefreshExpireException extends MyException{
     private String refreshToken;
 
     public RefreshExpireException(String str){
-        super("expire refresh token. login again." ,HttpStatus.UNAUTHORIZED);
+        super("expire refresh token. login again." ,HttpStatus.SEE_OTHER);
         refreshToken = str;
         
     }

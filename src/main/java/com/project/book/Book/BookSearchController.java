@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.project.book.Security.JwtTokenProvider;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -31,6 +32,7 @@ public class BookSearchController {
     }
 
     @GetMapping("/search")
+    @ApiImplicitParam(name = "X-Auth-Token", value = "Access Token", required = false, allowEmptyValue = false, paramType = "header", dataTypeClass = String.class, example = "access_token")
     public ResponseEntity<BookListDTO> searchBookList(HttpServletRequest request, @RequestParam int page, @RequestParam String keyword){
         String token = jwtTokenProvider.resolveToken(request);
         BookListDTO bookListDTO = bookAPIService.searchBookList(keyword, page);
@@ -46,6 +48,7 @@ public class BookSearchController {
     }
 
     @GetMapping("/search/book")
+    @ApiImplicitParam(name = "X-Auth-Token", value = "Access Token", required = false, allowEmptyValue = false, paramType = "header", dataTypeClass = String.class, example = "access_token")
     public ResponseEntity<BookInfoDTO> searchBookInfo(@RequestParam String isbn){
         System.out.println(isbn);
         BookInfoDTO bookInfoDTO = bookAPIService.searchBookInfo(isbn);

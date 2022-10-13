@@ -28,10 +28,11 @@ import lombok.RequiredArgsConstructor;
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final JwtFilter jwtFilter;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception{
-        JwtFilter jwtFilter = new JwtFilter(jwtTokenProvider);
+        
 
         http.csrf().disable();
 
@@ -40,13 +41,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter{
         // http.cors().configurationSource(corsConfigurationSource());
 
         http.authorizeHttpRequests()
-            .antMatchers("/users/login").permitAll()
-            .antMatchers("/users/signup").permitAll()
-            .antMatchers("/h2-console/**").permitAll() 
-            .antMatchers("/swagger-ui.html").permitAll()
-            .antMatchers("/swagger-ui/**").permitAll()
-            .antMatchers("/users/refresh").permitAll()
-            .anyRequest().authenticated()
+            .antMatchers("/users/test").authenticated()
+            .anyRequest().permitAll()
+            
         .and()
             .csrf()
             .ignoringAntMatchers("/h2-console/**").disable();

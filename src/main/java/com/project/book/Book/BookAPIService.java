@@ -32,7 +32,7 @@ public class BookAPIService {
 
 
     public BookListDTO searchBookList(String keyword, int page){
-        int start = 1 + page * this.display;    
+        int start = 1 + (page-1) * this.display;    
 
         // if(start > 1000){
         //     throw new MyException("Invalid page(1~100).", HttpStatus.BAD_REQUEST);

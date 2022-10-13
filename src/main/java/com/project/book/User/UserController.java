@@ -19,6 +19,8 @@ import com.project.book.Security.JwtToken;
 import com.project.book.Security.JwtTokenDTO;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -95,6 +97,7 @@ public class UserController {
     }
     
     @GetMapping("/test")
+    @ApiImplicitParam(name = "X-Auth-Token", value = "Access Token", required = false, allowEmptyValue = false, paramType = "header", dataTypeClass = String.class, example = "access_token")
     public ResponseEntity<String> test(){
         return new ResponseEntity<String>("hi", HttpStatus.OK);
     }
