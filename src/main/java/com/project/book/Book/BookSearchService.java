@@ -29,8 +29,8 @@ public class BookSearchService {
     private int keywordNumber;
 
 
-    public void saveKeyword(String keyword, String token){
-        MyUser user = userRepository.findByEmail(jwtTokenProvider.getEmail(token));
+    public void saveKeyword(String keyword, String email){
+        MyUser user = userRepository.findByEmail(email);
         History history;
         
         if(user == null){
@@ -42,6 +42,7 @@ public class BookSearchService {
             history = new History();
             history.setKeyword(keyword);
             history.setSearchTime(LocalDateTime.now());
+            history.setId(user.getId());
         }
         else{
             history.setSearchTime(LocalDateTime.now());

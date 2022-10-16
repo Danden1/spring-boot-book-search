@@ -50,7 +50,6 @@ public class BookSearchController {
     @GetMapping("/search/book")
     @ApiImplicitParam(name = "X-Auth-Token", value = "Access Token", required = false, allowEmptyValue = false, paramType = "header", dataTypeClass = String.class, example = "access_token")
     public ResponseEntity<BookInfoDTO> searchBookInfo(@RequestParam String isbn){
-        System.out.println(isbn);
         BookInfoDTO bookInfoDTO = bookAPIService.searchBookInfo(isbn);
 
         return new ResponseEntity<BookInfoDTO>(bookInfoDTO, HttpStatus.OK);

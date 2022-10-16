@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.book.Exception.MyException;
-import com.project.book.Security.JwtToken;
 import com.project.book.Security.JwtTokenDTO;
 
 import io.swagger.annotations.Api;
@@ -46,12 +45,12 @@ public class UserController {
     public ResponseEntity<JwtTokenDTO> postLogin(@RequestBody UserDTO reqBody){
         String email = reqBody.getEmail();
         String pwd = reqBody.getPwd();
-        JwtToken token;
+        JwtTokenDTO token;
         
         token = userService.login(email, pwd);
         
         
-        return new ResponseEntity<JwtTokenDTO>(modelMapper.map(token, JwtTokenDTO.class), HttpStatus.OK);
+        return new ResponseEntity<JwtTokenDTO>(token, HttpStatus.OK);
     }
 
     @GetMapping("/signup")
@@ -83,14 +82,11 @@ public class UserController {
         String refreshToken = reqBody.getAccessToken();
         String accessToken = reqBody.getRefreshToken();
 
-        JwtToken jwtToken; 
+        JwtTokenDTO jwtToken; 
 
-        if(userService.validRefreshToken(accessToken, refreshToken)){
-            jwtToken = userService.updateToken(accessToken, refreshToken);
-        }
-        else{
-            throw new MyException("invalid refresh token.", HttpStatus.UNPROCESSABLE_ENTITY);
-        }
+        
+        jwtToken = userService.updateToken(accessToken, refreshToken);
+        
         
         
         return new ResponseEntity<JwtTokenDTO>(modelMapper.map(jwtToken, JwtTokenDTO.class), HttpStatus.OK);

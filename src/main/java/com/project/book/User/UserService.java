@@ -1,14 +1,16 @@
 package com.project.book.User;
 
 import com.project.book.Exception.MyException;
-import com.project.book.Security.JwtToken;
+import com.project.book.Exception.RefreshExpireException;
+import com.project.book.Security.JwtTokenDTO;
 import com.project.book.Security.JwtTokenProvider;
-import com.project.book.Security.JwtTokenRepository;
+
 
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.method.P;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
@@ -19,23 +21,23 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
-    private final JwtTokenRepository jwtTokenRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public JwtToken login(String email, String pwd){
+    public JwtTokenDTO login(String email, String pwd){
         MyUser user = userRepository.findByEmail(email);
+        pwd = passwordEncoder.encode(pwd);
 
         if(user != null && user.getPwd().equals(pwd)){
             String accessToken = jwtTokenProvider.createAccessToken(email); 
             String refreshToken = jwtTokenProvider.createRefreshToken(email);
 
-            JwtToken jwtToken = new JwtToken();
+            JwtTokenDTO jwtTokenDTO = new JwtTokenDTO();
 
-            jwtToken.setAccessToken(accessToken);
-            jwtToken.setRefreshToken(refreshToken);
+            jwtTokenDTO.setAccessToken(accessToken);
+            jwtTokenDTO.setRefreshToken(refreshToken);
 
-            jwtTokenRepository.save(jwtToken);
 
-            return jwtToken;
+            return jwtTokenDTO;
             
         }
         else{
@@ -51,7 +53,7 @@ public class UserService {
             throw new MyException("already exist email", HttpStatus.UNPROCESSABLE_ENTITY);
         }
         user = new MyUser();
-
+        pwd = passwordEncoder.encode(pwd);
         try{
             user.setEmail(email);
         }
@@ -68,39 +70,28 @@ public class UserService {
         return user;
     }
 
-    public boolean validRefreshToken(String accessToken, String refreshToken){
-        JwtToken jwtToken = jwtTokenRepository.findByaccessToken(accessToken);
 
-        if(jwtToken != null && jwtToken.getRefreshToken().equals(refreshToken)){
-            if(jwtTokenProvider.validateRefreshToken(refreshToken)){
-
-            }
-            return true;
-        }
-        else{
-            return false;
-        }
-
-    }
-
-    public JwtToken updateToken(String accessToken, String refreshToken){
+    public JwtTokenDTO updateToken(String accessToken, String refreshToken){
         String email = jwtTokenProvider.getEmail(refreshToken);
 
-        JwtToken jwtToken = jwtTokenRepository.findByrefreshToken(refreshToken);
+        
 
-        if(jwtToken == null || jwtToken.getAccessToken() != accessToken){
-            throw new MyException("fail update token. login again.", HttpStatus.UNPROCESSABLE_ENTITY);
+        if(email != jwtTokenProvider.getEmail(accessToken) || email == null){
+            throw new MyException("Invalid access/refresh token.", HttpStatus.UNPROCESSABLE_ENTITY);
         }
+        jwtTokenProvider.validateRefreshToken(refreshToken);
+
+        JwtTokenDTO jwtTokenDTO = new JwtTokenDTO();
 
         accessToken = jwtTokenProvider.createAccessToken(email);
         refreshToken = jwtTokenProvider.createRefreshToken(email);
         
-        jwtToken.setAccessToken(accessToken);
-        jwtToken.setRefreshToken(refreshToken);
+        jwtTokenDTO.setAccessToken(accessToken);
+        jwtTokenDTO.setRefreshToken(refreshToken);
 
-        jwtTokenRepository.save(jwtToken);
+        
 
-        return jwtToken;
+        return jwtTokenDTO;
 
     }
 
