@@ -34,11 +34,11 @@ public class BookSearchController {
     @GetMapping("/search")
     @ApiImplicitParam(name = "X-Auth-Token", value = "Access Token", required = false, allowEmptyValue = false, paramType = "header", dataTypeClass = String.class, example = "access_token")
     public ResponseEntity<BookListDTO> searchBookList(HttpServletRequest request, @RequestParam int page, @RequestParam String keyword){
-        String token = jwtTokenProvider.resolveToken(request);
+        String email = jwtTokenProvider.getEmail(jwtTokenProvider.resolveToken(request));
         BookListDTO bookListDTO = bookAPIService.searchBookList(keyword, page);
 
-        if(token != null){
-            bookSearchService.saveKeyword(keyword, token);
+        if(email != null){
+            bookSearchService.saveKeyword(keyword, email);
         }
 
         bookSearchService.saveRank(keyword);

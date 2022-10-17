@@ -84,20 +84,8 @@ public class JwtTokenProvider {
     public Authentication getAuthentication(String token){
         UserDetails userDetails = null;
 
-        if(this.validateAccessToken(token)){
-            userDetails = userSecurityService.loadUserByUsername(getEmail(token));
-        }
-        else{
-            return null;
-        }
-        try{
-            if(this.validateAccessToken(token)){
-                userDetails = userSecurityService.loadUserByUsername(getEmail(token));
-            }
-        }
-        catch(Exception e){
-            System.out.println("auth func");
-        }
+        this.validateAccessToken(token);
+        userDetails = userSecurityService.loadUserByUsername(getEmail(token));
 
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
@@ -124,10 +112,8 @@ public class JwtTokenProvider {
             Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
             return true;
         } catch(ExpiredJwtException e){
-            System.out.println("token func1");
             throw new AccessExpireException();
         } catch (JwtException | IllegalArgumentException e){
-            System.out.println("token func2");
             throw new MyException("Invalid Token", HttpStatus.UNAUTHORIZED);
         }
     }

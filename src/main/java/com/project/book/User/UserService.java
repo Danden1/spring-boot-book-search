@@ -25,9 +25,8 @@ public class UserService {
 
     public JwtTokenDTO login(String email, String pwd){
         MyUser user = userRepository.findByEmail(email);
-        pwd = passwordEncoder.encode(pwd);
-
-        if(user != null && user.getPwd().equals(pwd)){
+        
+        if(user != null && passwordEncoder.matches(pwd, user.getPwd())){
             String accessToken = jwtTokenProvider.createAccessToken(email); 
             String refreshToken = jwtTokenProvider.createRefreshToken(email);
 
@@ -60,11 +59,11 @@ public class UserService {
         catch(Exception ex){
             throw new MyException(ex.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
         }
-
+        
         user.setName(name);
         user.setPwd(pwd);
         user.setUserRole(userRole);
-    
+        
         userRepository.save(user);
 
         return user;
@@ -76,7 +75,7 @@ public class UserService {
 
         
 
-        if(email != jwtTokenProvider.getEmail(accessToken) || email == null){
+        if(!email.equals(jwtTokenProvider.getEmail(accessToken)) || email == null){
             throw new MyException("Invalid access/refresh token.", HttpStatus.UNPROCESSABLE_ENTITY);
         }
         jwtTokenProvider.validateRefreshToken(refreshToken);

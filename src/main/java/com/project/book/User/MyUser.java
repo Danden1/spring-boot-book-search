@@ -36,7 +36,7 @@ public class MyUser {
     @NotEmpty
     private String email;
 
-    @Column(length = 20)
+    @Column(length = 60)
     @NotEmpty
     private String pwd;
 
