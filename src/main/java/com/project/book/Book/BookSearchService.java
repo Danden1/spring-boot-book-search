@@ -34,7 +34,7 @@ public class BookSearchService {
         History history;
         
         if(user == null){
-            throw new MyException("not exist user", HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new MyException("not exist user or Invalid token.", HttpStatus.UNPROCESSABLE_ENTITY);
         }
         history = historyRepository.findByUserIdAndKeyword(user.getId(), keyword);
         
@@ -42,7 +42,7 @@ public class BookSearchService {
             history = new History();
             history.setKeyword(keyword);
             history.setSearchTime(LocalDateTime.now());
-            history.setId(user.getId());
+            history.setUser(user);
         }
         else{
             history.setSearchTime(LocalDateTime.now());

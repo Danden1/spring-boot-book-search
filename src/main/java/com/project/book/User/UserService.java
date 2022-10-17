@@ -71,14 +71,14 @@ public class UserService {
 
 
     public JwtTokenDTO updateToken(String accessToken, String refreshToken){
-        String email = jwtTokenProvider.getEmail(refreshToken);
+        jwtTokenProvider.validateRefreshToken(refreshToken);
 
-        
+        String email = jwtTokenProvider.getEmail(refreshToken);
 
         if(!email.equals(jwtTokenProvider.getEmail(accessToken)) || email == null){
             throw new MyException("Invalid access/refresh token.", HttpStatus.UNPROCESSABLE_ENTITY);
         }
-        jwtTokenProvider.validateRefreshToken(refreshToken);
+        
 
         JwtTokenDTO jwtTokenDTO = new JwtTokenDTO();
 

@@ -35,7 +35,7 @@ public class GlobalExceptionHandler {
         URI redirectURI = new URI("http://localhost:8080/users/login");
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setLocation(redirectURI);
-
+        
         return new ResponseEntity(httpHeaders, HttpStatus.SEE_OTHER);
     }
 

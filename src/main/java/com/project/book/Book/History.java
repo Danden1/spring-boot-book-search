@@ -34,7 +34,7 @@ public class History{
     private LocalDateTime searchTime;
 
     @ManyToOne(cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "userId",  referencedColumnName = "id")
     private MyUser user;
 
     

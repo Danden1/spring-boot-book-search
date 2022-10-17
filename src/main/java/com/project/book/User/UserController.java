@@ -79,13 +79,14 @@ public class UserController {
 
     @PostMapping("/token")
     public ResponseEntity<JwtTokenDTO> refreshToken(@RequestBody JwtTokenDTO reqBody) {
-        String refreshToken = reqBody.getAccessToken();
-        String accessToken = reqBody.getRefreshToken();
+        String refreshToken = reqBody.getRefreshToken();
+        String accessToken = reqBody.getAccessToken();
 
         JwtTokenDTO jwtToken; 
 
         
         jwtToken = userService.updateToken(accessToken, refreshToken);
+        
         
         
         

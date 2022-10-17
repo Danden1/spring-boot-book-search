@@ -91,10 +91,12 @@ public class JwtTokenProvider {
     }
 
     public String getEmail(String token){
-        if(token == null){
+        try{
+            return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+        }
+        catch(Exception e){
             return null;
         }
-        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
     }
 
     public String resolveToken(HttpServletRequest req){
