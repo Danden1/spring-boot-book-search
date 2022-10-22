@@ -94,6 +94,10 @@ public class JwtTokenProvider {
         try{
             return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
         }
+        catch(ExpiredJwtException e){
+            
+            return e.getClaims().getSubject();
+        }
         catch(Exception e){
             return null;
         }

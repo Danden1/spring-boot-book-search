@@ -15,6 +15,7 @@ import com.project.book.Security.JwtTokenProvider;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiResponse;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -25,7 +26,7 @@ public class BookSearchController {
     final private BookSearchService bookSearchService;
     final private JwtTokenProvider jwtTokenProvider;
     final private BookAPIService bookAPIService;
-
+    
     @GetMapping("/")
     public ResponseEntity getMainPage(){
         return new ResponseEntity(HttpStatus.OK);
