@@ -80,14 +80,15 @@ public class BookSearchService {
         return rankList;
     }
 
-    public List<History> getHistory(String token){
-        MyUser user = userRepository.findByEmail(jwtTokenProvider.getEmail(token));
+    public List<History> getHistory(String email){
+        MyUser user = userRepository.findByEmail(email);
+        
         List<History> historyList = historyRepository.findByUserIdOrderBySearchTimeAsc(user.getId());
-
+        
         if(historyList != null && historyList.size() > this.keywordNumber){
             historyList = new ArrayList<>(historyList.subList(0, this.keywordNumber));
         }
-
+        
         return historyList;
     }
 

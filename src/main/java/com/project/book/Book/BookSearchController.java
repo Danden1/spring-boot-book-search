@@ -1,5 +1,9 @@
 package com.project.book.Book;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.http.HttpStatus;
@@ -28,8 +32,39 @@ public class BookSearchController {
     final private BookAPIService bookAPIService;
     
     @GetMapping("/")
-    public ResponseEntity getMainPage(){
-        return new ResponseEntity(HttpStatus.OK);
+    @ApiImplicitParam(name = "X-Auth-Token", value = "Access Token", required = false, allowEmptyValue = false, paramType = "header", dataTypeClass = String.class, example = "access_token")
+    public ResponseEntity<SearchDTO> getMainPage(HttpServletRequest request){
+        String email = jwtTokenProvider.getEmail(jwtTokenProvider.resolveToken(request));
+
+        List<History> historyList;
+        List<Rank> rankList = bookSearchService.getRank();
+
+        List<HistoryDTO> historyDTOList;
+        List<RankDTO> rankDTOList;
+        SearchDTO searchDTO;
+
+        if(email == null){
+            historyList = new ArrayList<>();
+        }
+        else{
+            historyList = bookSearchService.getHistory(email);
+        }
+
+
+
+        historyDTOList = historyList.stream()
+            .map(m-> new HistoryDTO(m))
+            .collect(Collectors.toList());
+
+
+        rankDTOList = rankList.stream()
+            .map(m-> new RankDTO(m))
+            .collect(Collectors.toList());
+
+        searchDTO = new SearchDTO(historyDTOList, rankDTOList);
+        
+        
+        return new ResponseEntity<SearchDTO>(searchDTO, HttpStatus.OK);
     }
 
     @GetMapping("/search")
