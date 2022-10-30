@@ -71,7 +71,7 @@ public class BookSearchService {
     }
 
     public List<Rank> getRank(){
-        List<Rank> rankList = rankRepository.findByOrderByCountAsc();
+        List<Rank> rankList = rankRepository.findByOrderByCountDesc();
 
         if(rankList != null && rankList.size() > this.keywordNumber){
             rankList = new ArrayList<>(rankList.subList(0, this.keywordNumber));
@@ -83,7 +83,7 @@ public class BookSearchService {
     public List<History> getHistory(String email){
         MyUser user = userRepository.findByEmail(email);
         
-        List<History> historyList = historyRepository.findByUserIdOrderBySearchTimeAsc(user.getId());
+        List<History> historyList = historyRepository.findByUserIdOrderBySearchTimeDesc(user.getId());
         
         if(historyList != null && historyList.size() > this.keywordNumber){
             historyList = new ArrayList<>(historyList.subList(0, this.keywordNumber));

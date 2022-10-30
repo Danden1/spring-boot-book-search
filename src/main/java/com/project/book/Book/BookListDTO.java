@@ -1,7 +1,5 @@
 package com.project.book.Book;
 
-import java.util.List;
-
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.Getter;
@@ -22,11 +20,11 @@ public class BookListDTO {
     private Integer display;
 
     @ApiModelProperty("겸색 결과 목록")
-    private Item[] items;
+    private BookListItem[] items;
 
 
     @Data
-    static class Item{
+    static class BookListItem {
         @ApiModelProperty("제목")
         private String title;
 

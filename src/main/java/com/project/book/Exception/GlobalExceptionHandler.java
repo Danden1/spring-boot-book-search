@@ -30,13 +30,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(ex.getHttpStatus()).body(map);
     }
 
-    @ExceptionHandler(RefreshExpireException.class)
-    public ResponseEntity handleRefreshExpireException(HttpServletResponse res, RefreshExpireException ex) throws URISyntaxException,IOException{
-        URI redirectURI = new URI("http://localhost:8080/users/login");
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setLocation(redirectURI);
-        
-        return new ResponseEntity(httpHeaders, HttpStatus.SEE_OTHER);
-    }
+
+//    client에서 redirect 처리
+//    @ExceptionHandler(RefreshExpireException.class)
+//    public ResponseEntity handleRefreshExpireException(HttpServletResponse res, RefreshExpireException ex) throws URISyntaxException,IOException{
+//        URI redirectURI = new URI("http://localhost:8080/users/login");
+//        HttpHeaders httpHeaders = new HttpHeaders();
+//        httpHeaders.setLocation(redirectURI);
+//
+//        return new ResponseEntity(httpHeaders, HttpStatus.SEE_OTHER);
+//    }
 
 }

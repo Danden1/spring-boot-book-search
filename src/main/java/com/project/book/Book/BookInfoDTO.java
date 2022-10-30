@@ -1,9 +1,6 @@
 package com.project.book.Book;
 
-import java.util.List;
-
 import io.swagger.annotations.ApiModelProperty;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,10 +12,10 @@ import lombok.Setter;
 public class BookInfoDTO {
 
     @ApiModelProperty("겸색 결과")
-    private Item1[] items;
+    private BookInfoItem[] items;
 
     @Data
-    static class Item1{
+    static class BookInfoItem {
         @ApiModelProperty("제목")
         private String title;
 

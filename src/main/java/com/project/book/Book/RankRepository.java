@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface RankRepository extends JpaRepository<Rank, Integer>{
     public Rank findByKeyword(String keyword);
-    public List<Rank> findByOrderByCountAsc();
+    public List<Rank> findByOrderByCountDesc();
 }
