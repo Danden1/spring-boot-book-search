@@ -34,8 +34,11 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @RequiredArgsConstructor
 public class JwtTokenProvider {
 
-    @Value("${security.jwt.token.secret-key}")
-    private String secretKey;
+    @Value("${security.jwt.token.access-secret-key}")
+    private String accessSecretKey;
+
+    @Value("${security.jwt.token.refresh-secret-key}")
+    private String refreshSecretKey;
 
     @Value("${security.jwt.token.access-token-valid-time}")
     private long accessTokenValidTime;
@@ -46,10 +49,11 @@ public class JwtTokenProvider {
 
     @Autowired
     private UserSecurityService userSecurityService;
-    
+
 
     @PostConstruct void init(){
-        secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
+        accessSecretKey = Base64.getEncoder().encodeToString(accessSecretKey.getBytes());
+        refreshSecretKey = Base64.getEncoder().encodeToString(refreshSecretKey.getBytes());
     }
 
 
@@ -63,7 +67,7 @@ public class JwtTokenProvider {
             .setClaims(claims)
             .setIssuedAt(now)
             .setExpiration(validDate)
-            .signWith(SignatureAlgorithm.HS256, secretKey)
+            .signWith(SignatureAlgorithm.HS256, accessSecretKey)
             .compact();
     }
 
@@ -77,7 +81,7 @@ public class JwtTokenProvider {
             .setClaims(claims)
             .setIssuedAt(now)
             .setExpiration(validDate)
-            .signWith(SignatureAlgorithm.HS256, secretKey)
+            .signWith(SignatureAlgorithm.HS256, refreshSecretKey)
             .compact();
     }
 
@@ -85,17 +89,32 @@ public class JwtTokenProvider {
         UserDetails userDetails = null;
 
         this.validateAccessToken(token);
-        userDetails = userSecurityService.loadUserByUsername(getEmail(token));
+
+
+        userDetails = userSecurityService.loadUserByUsername(getAccessTokenEmail(token));
 
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
-    public String getEmail(String token){
+    public String getAccessTokenEmail(String token){
         try{
-            return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+            return Jwts.parser().setSigningKey(accessSecretKey).parseClaimsJws(token).getBody().getSubject();
         }
         catch(ExpiredJwtException e){
             
+            return e.getClaims().getSubject();
+        }
+        catch(Exception e){
+            return null;
+        }
+    }
+
+    public String getRefreshTokenEmail(String token){
+        try{
+            return Jwts.parser().setSigningKey(refreshSecretKey).parseClaimsJws(token).getBody().getSubject();
+        }
+        catch(ExpiredJwtException e){
+
             return e.getClaims().getSubject();
         }
         catch(Exception e){
@@ -115,23 +134,23 @@ public class JwtTokenProvider {
     
     public boolean validateAccessToken(String token){
         try{
-            Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+            Jwts.parser().setSigningKey(accessSecretKey).parseClaimsJws(token);
             return true;
         } catch(ExpiredJwtException e){
             throw new AccessExpireException();
         } catch (JwtException | IllegalArgumentException e){
-            throw new MyException("Invalid Token", HttpStatus.UNAUTHORIZED);
+            throw new MyException("Invalid Access Token", HttpStatus.UNAUTHORIZED);
         }
     }
 
     public boolean validateRefreshToken(String token){
         try{
-            Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
+            Jwts.parser().setSigningKey(refreshSecretKey).parseClaimsJws(token);
             return true;
         } catch(ExpiredJwtException e){
             throw new RefreshExpireException(token);
         } catch (JwtException | IllegalArgumentException e){
-            throw new MyException("Invalid Token", HttpStatus.UNAUTHORIZED);
+            throw new MyException("Invalid Refresh Token", HttpStatus.UNAUTHORIZED);
         }
     }
 }

@@ -3,9 +3,12 @@ package com.project.book.User;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.project.book.Security.JwtTokenProvider;
+import lombok.NoArgsConstructor;
 import org.apache.catalina.connector.Response;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +28,9 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.http.MediaType;
+
+import javax.servlet.http.HttpServletRequest;
 
 
 @RestController
@@ -36,6 +42,8 @@ public class UserController {
 
     private final UserService userService;
     private final ModelMapper modelMapper;
+
+    private final JwtTokenProvider jwtTokenProvider;
 
     @GetMapping("/login")
     public ResponseEntity getLogin(){
@@ -60,7 +68,7 @@ public class UserController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @PostMapping("/signup")
+    @PostMapping(value = "/signup")
     @ApiResponse(code = 422, message = "비밀번호 불일치 또는 이미 존재하는 이메일")
     public ResponseEntity<UserResponseDTO> postSignup(@RequestBody SignupDTO reqBody){
         String email = reqBody.getEmail();
@@ -96,11 +104,14 @@ public class UserController {
         
         return new ResponseEntity<JwtTokenDTO>(modelMapper.map(jwtToken, JwtTokenDTO.class), HttpStatus.OK);
     }
-    
-    @GetMapping("/test")
-    @ApiImplicitParam(name = "X-Auth-Token", value = "Access Token", required = false, allowEmptyValue = false, paramType = "header", dataTypeClass = String.class, example = "access_token")
-    public ResponseEntity<String> test(){
-        return new ResponseEntity<String>("hi", HttpStatus.OK);
+
+    @GetMapping("/info")
+    @ApiImplicitParam(name = "X-Auth-Token", value = "Access Token", required = true, allowEmptyValue = false, paramType = "header", dataTypeClass = String.class, example = "access_token")
+    public ResponseEntity<UserResponseDTO> userInfo(HttpServletRequest request){
+        String email = jwtTokenProvider.getAccessTokenEmail((jwtTokenProvider.resolveToken(request)));
+
+
+        return new ResponseEntity<UserResponseDTO>(modelMapper.map(userService.getUserInfo(email), UserResponseDTO.class),HttpStatus.OK);
     }
     
 }

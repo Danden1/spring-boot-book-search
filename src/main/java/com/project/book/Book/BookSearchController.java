@@ -34,7 +34,7 @@ public class BookSearchController {
     @GetMapping("/")
     @ApiImplicitParam(name = "X-Auth-Token", value = "Access Token", required = false, allowEmptyValue = false, paramType = "header", dataTypeClass = String.class, example = "access_token")
     public ResponseEntity<SearchDTO> getMainPage(HttpServletRequest request){
-        String email = jwtTokenProvider.getEmail(jwtTokenProvider.resolveToken(request));
+        String email = jwtTokenProvider.getAccessTokenEmail(jwtTokenProvider.resolveToken(request));
 
         List<History> historyList;
         List<Rank> rankList = bookSearchService.getRank();
@@ -70,7 +70,7 @@ public class BookSearchController {
     @GetMapping("/search")
     @ApiImplicitParam(name = "X-Auth-Token", value = "Access Token", required = false, allowEmptyValue = false, paramType = "header", dataTypeClass = String.class, example = "access_token")
     public ResponseEntity<BookListDTO> searchBookList(HttpServletRequest request, @RequestParam int page, @RequestParam String keyword){
-        String email = jwtTokenProvider.getEmail(jwtTokenProvider.resolveToken(request));
+        String email = jwtTokenProvider.getAccessTokenEmail(jwtTokenProvider.resolveToken(request));
         BookListDTO bookListDTO = bookAPIService.searchBookList(keyword, page);
 
         if(email != null){

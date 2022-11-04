@@ -1,7 +1,6 @@
 package com.project.book.User;
 
 import com.project.book.Exception.MyException;
-import com.project.book.Exception.RefreshExpireException;
 import com.project.book.Security.JwtTokenDTO;
 import com.project.book.Security.JwtTokenProvider;
 
@@ -9,7 +8,6 @@ import com.project.book.Security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.method.P;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -69,13 +67,34 @@ public class UserService {
         return user;
     }
 
+    public MyUser getUserInfo(String email){
+        MyUser user = userRepository.findByEmail(email);
+
+        if(user == null){
+            throw new MyException("not exist user", HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
+        return user;
+    }
+
+    public void removeUser(String email){
+        MyUser user = userRepository.findByEmail(email);
+
+        if(user != null){
+            userRepository.delete(user);
+        }
+        else{
+            throw new MyException("not exist email", HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+    }
+
 
     public JwtTokenDTO updateToken(String accessToken, String refreshToken){
         jwtTokenProvider.validateRefreshToken(refreshToken);
 
-        String email = jwtTokenProvider.getEmail(refreshToken);
+        String email = jwtTokenProvider.getRefreshTokenEmail(refreshToken);
 
-        if(!email.equals(jwtTokenProvider.getEmail(accessToken)) || email == null){
+        if(!email.equals(jwtTokenProvider.getAccessTokenEmail(accessToken)) || email == null){
             throw new MyException("Invalid access/refresh token.", HttpStatus.UNPROCESSABLE_ENTITY);
         }
         
