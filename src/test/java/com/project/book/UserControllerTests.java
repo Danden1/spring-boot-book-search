@@ -48,12 +48,6 @@ public class UserControllerTests {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private ModelMapper modelMapper;
-
-    @Autowired
-    private JwtFilter jwtFilter;
-
 
     @Autowired
     public MockMvc mock;

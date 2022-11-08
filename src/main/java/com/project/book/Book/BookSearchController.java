@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -27,44 +28,34 @@ import lombok.RequiredArgsConstructor;
 @CrossOrigin(origins = "*")
 @Api("Book Search Controller")
 public class BookSearchController {
-    final private BookSearchService bookSearchService;
-    final private JwtTokenProvider jwtTokenProvider;
-    final private BookAPIService bookAPIService;
+    private final BookSearchService bookSearchService;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final BookAPIService bookAPIService;
+
+    private final ModelMapper modelMapper;
     
     @GetMapping("/")
-    @ApiImplicitParam(name = "X-Auth-Token", value = "Access Token", required = false, allowEmptyValue = false, paramType = "header", dataTypeClass = String.class, example = "access_token")
-    public ResponseEntity<SearchDTO> getMainPage(HttpServletRequest request){
-        String email = jwtTokenProvider.getAccessTokenEmail(jwtTokenProvider.resolveToken(request));
-
-        List<History> historyList;
+    public ResponseEntity<RankDTO> getMainPage(){
         List<Rank> rankList = bookSearchService.getRank();
+        RankDTO rankDTO;
 
-        List<HistoryDTO> historyDTOList;
-        List<RankDTO> rankDTOList;
         SearchDTO searchDTO;
 
-        if(email == null){
-            historyList = new ArrayList<>();
-        }
-        else{
-            historyList = bookSearchService.getHistory(email);
-        }
 
+        rankDTO = new RankDTO(rankList);
 
+        return new ResponseEntity<RankDTO>(rankDTO, HttpStatus.OK);
+    }
 
-        historyDTOList = historyList.stream()
-            .map(m-> new HistoryDTO(m))
-            .collect(Collectors.toList());
+    @GetMapping("/search/history")
+    @ApiImplicitParam(name = "X-Auth-Token", value = "Access Token", required = true, allowEmptyValue = false, paramType = "header", dataTypeClass = String.class, example = "access_token")
+    public ResponseEntity<HistoryDTO> getHistory(HttpServletRequest request){
+        String email = jwtTokenProvider.getAccessTokenEmail(jwtTokenProvider.resolveToken(request));
 
+        List<History> historyList = bookSearchService.getHistory(email);
+        HistoryDTO historyDTO = new HistoryDTO(historyList);
 
-        rankDTOList = rankList.stream()
-            .map(m-> new RankDTO(m))
-            .collect(Collectors.toList());
-
-        searchDTO = new SearchDTO(historyDTOList, rankDTOList);
-        
-        
-        return new ResponseEntity<SearchDTO>(searchDTO, HttpStatus.OK);
+        return new ResponseEntity<HistoryDTO>(historyDTO, HttpStatus.OK);
     }
 
     @GetMapping("/search")

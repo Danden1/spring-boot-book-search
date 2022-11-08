@@ -1,24 +1,40 @@
 package com.project.book.Book;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 public class RankDTO {
 
-    RankDTO(Rank rank){
-        this.keyword = rank.getKeyword();
-        this.count = rank.getCount();
+    @ApiModelProperty("인기 검색어")
+    private List<RankItem> ranks;
+
+    RankDTO(List<Rank> ranks){
+        this.ranks = ranks.stream().map(RankItem::new).collect(Collectors.toList());
     }
 
-    @ApiModelProperty("키워드")
-    private String keyword;
+    static class RankItem {
+        RankItem(Rank rank){
+            this.keyword = new String(rank.getKeyword());
+            this.count = rank.getCount();
+        }
+        @ApiModelProperty("키워드")
+        private final String keyword;
 
-    @ApiModelProperty("검색 횟수")
-    private Integer count;
+        @ApiModelProperty("검색 횟수")
+        private final Integer count;
 
+        public String getKeyword(){
+            return keyword;
+        }
+
+        public Integer getCount(){
+            return count;
+        }
+    }
 }

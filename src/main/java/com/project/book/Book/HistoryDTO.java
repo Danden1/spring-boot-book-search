@@ -1,32 +1,43 @@
 package com.project.book.Book;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 
 @Data
-@NoArgsConstructor
 public class HistoryDTO {
 
-
-    HistoryDTO(History history){
-        this.keyword = history.getKeyword();
-        this.searchTime = history.getSearchTime();
+    HistoryDTO(List<History> histories){
+        this.histories = histories.stream().map(HistoryItem::new).collect(Collectors.toList());
     }
 
-    @ApiModelProperty("키워드")
-    private String keyword;
+    @ApiModelProperty("사용자 검색 기록")
+    private List<HistoryItem> histories;
 
 
-    @ApiModelProperty("시간")
-    private LocalDateTime searchTime;
+    static class HistoryItem {
+
+        HistoryItem(History history){
+            keyword = history.getKeyword();
+            searchTime = history.getSearchTime();
+        }
+        @ApiModelProperty("키워드")
+        private final String keyword;
 
 
-    public String getSearchTime(){
-        return searchTime.toString();
+        @ApiModelProperty("시간")
+        private final LocalDateTime searchTime;
+
+        public String getSearchTime(){
+            return searchTime.toString();
+        }
+        public String getKeyword(){ return keyword;}
     }
+
+
 
 }

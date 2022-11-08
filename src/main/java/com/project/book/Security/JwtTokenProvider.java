@@ -105,7 +105,7 @@ public class JwtTokenProvider {
             return e.getClaims().getSubject();
         }
         catch(Exception e){
-            return null;
+            throw new MyException(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -118,7 +118,7 @@ public class JwtTokenProvider {
             return e.getClaims().getSubject();
         }
         catch(Exception e){
-            return null;
+            throw new MyException(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
