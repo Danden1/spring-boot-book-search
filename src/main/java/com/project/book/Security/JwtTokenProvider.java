@@ -97,6 +97,9 @@ public class JwtTokenProvider {
     }
 
     public String getAccessTokenEmail(String token){
+        if(token == null){
+            return null;
+        }
         try{
             return Jwts.parser().setSigningKey(accessSecretKey).parseClaimsJws(token).getBody().getSubject();
         }
@@ -110,6 +113,9 @@ public class JwtTokenProvider {
     }
 
     public String getRefreshTokenEmail(String token){
+        if(token == null){
+            return null;
+        }
         try{
             return Jwts.parser().setSigningKey(refreshSecretKey).parseClaimsJws(token).getBody().getSubject();
         }
