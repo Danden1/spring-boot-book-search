@@ -65,9 +65,6 @@ public class UserControllerTests {
         @Test
         public void signupWrongPwdTest() throws Exception{
 
-//            mock =  MockMvcBuilders.standaloneSetup(UserController.class)
-//                    .addFilter(jwtFilter, "/*")
-//                    .build();
             try {
                 userService.removeUser(email);
             }

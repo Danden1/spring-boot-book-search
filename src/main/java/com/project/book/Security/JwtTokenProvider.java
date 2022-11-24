@@ -24,7 +24,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
@@ -51,7 +50,7 @@ public class JwtTokenProvider {
     private UserSecurityService userSecurityService;
 
 
-    @PostConstruct void init(){
+    @PostConstruct protected void init(){
         accessSecretKey = Base64.getEncoder().encodeToString(accessSecretKey.getBytes());
         refreshSecretKey = Base64.getEncoder().encodeToString(refreshSecretKey.getBytes());
     }
@@ -138,24 +137,22 @@ public class JwtTokenProvider {
         return null;
     }
     
-    public boolean validateAccessToken(String token){
+    public void validateAccessToken(String token){
         try{
             Jwts.parser().setSigningKey(accessSecretKey).parseClaimsJws(token);
-            return true;
         } catch(ExpiredJwtException e){
             throw new AccessExpireException();
-        } catch (JwtException | IllegalArgumentException e){
+        } catch (Exception e){
             throw new MyException("Invalid Access Token", HttpStatus.UNAUTHORIZED);
         }
     }
 
-    public boolean validateRefreshToken(String token){
+    public void validateRefreshToken(String token){
         try{
             Jwts.parser().setSigningKey(refreshSecretKey).parseClaimsJws(token);
-            return true;
         } catch(ExpiredJwtException e){
             throw new RefreshExpireException(token);
-        } catch (JwtException | IllegalArgumentException e){
+        } catch (Exception e){
             throw new MyException("Invalid Refresh Token", HttpStatus.UNAUTHORIZED);
         }
     }

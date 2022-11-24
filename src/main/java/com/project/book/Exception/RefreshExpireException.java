@@ -7,10 +7,10 @@ import lombok.Getter;
 
 @Getter
 public class RefreshExpireException extends MyException{
-    private String refreshToken;
+    private final String refreshToken;
 
     public RefreshExpireException(String str){
-        super("expire refresh token. login again." ,HttpStatus.SEE_OTHER);
+        super("expire refresh token. login again." ,HttpStatus.UNPROCESSABLE_ENTITY);
         refreshToken = str;
         
     }

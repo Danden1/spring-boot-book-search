@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin
 @Api("Book Search Controller")
 public class BookSearchController {
     private final BookSearchService bookSearchService;
