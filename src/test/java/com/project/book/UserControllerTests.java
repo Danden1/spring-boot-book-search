@@ -1,13 +1,8 @@
 package com.project.book;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.project.book.Security.JwtFilter;
-import com.project.book.Security.JwtTokenDTO;
-import com.project.book.Security.JwtTokenProvider;
-import com.project.book.User.MyUser;
-import com.project.book.User.UserRepository;
-import com.project.book.User.UserService;
-import org.junit.jupiter.api.BeforeAll;
+import com.project.book.security.JwtTokenProvider;
+import com.project.book.user.UserService;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -16,23 +11,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.event.annotation.BeforeTestClass;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultMatcher;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import org.modelmapper.ModelMapper;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
