@@ -1,4 +1,4 @@
-package com.project.book.book;
+package com.project.book.rank;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,7 +12,7 @@ public class RankDTO {
     @ApiModelProperty("인기 검색어")
     private List<RankItem> ranks;
 
-    RankDTO(List<Rank> ranks){
+    public RankDTO(List<Rank> ranks){
         this.ranks = ranks.stream().map(RankItem::new).collect(Collectors.toList());
     }
 

@@ -1,7 +1,11 @@
-package com.project.book.book;
+package com.project.book.api;
 
 import java.net.URI;
 
+import com.project.book.book.BookInfoDTO;
+import com.project.book.book.BooksDTO;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -13,33 +17,47 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.project.book.exception.MyException;
 
-import lombok.NoArgsConstructor;
 
 @Component
-@NoArgsConstructor
 @Service
-public class BookAPIService {
+public class NaverBookAPI implements BookAPI {
 
     @Value("${naver.book-api.client-id}")
     private String clientId;
     @Value("${naver.book-api.client-secret}")
     private String clientSecret;
-    private int display = 10;
+
+    private final String defaultUrl = "https://openapi.naver.com";
 
     private final RestTemplate restTemplate = new RestTemplate();
 
+    private final ModelMapper modelMapper;
+
+    public NaverBookAPI(ModelMapper modelMapper){
+        this.modelMapper = modelMapper;
+
+//        add mapping rule(NaverBooksDTO -> BooksDTO, NaverBookInfoDTO -> BookInfoDTO)
+//        PropertyMap<NaverBooksDTO, BooksDTO> bookMap = new PropertyMap<NaverBooksDTO, BooksDTO>() {
+//            protected void configure() {
+//
+//            }
+//        };
+//
+//        modelMapper.add(bookMap);
+    }
 
 
-    public BookListDTO searchBookList(String keyword, int page){
-        int start = 1 + (page-1) * this.display;    
 
+    @Override
+    public BooksDTO getBooks(String keyword, int page){
+        int start = 1 + (page-1) * DISPLAY;    
 
         URI uri = UriComponentsBuilder
-                    .fromUriString("https://openapi.naver.com")
+                    .fromUriString(defaultUrl)
                     .path("/v1/search/book.json")
                     .queryParam("query", keyword)
                     .queryParam("start", start)
-                    .queryParam("display", this.display)
+                    .queryParam("display", DISPLAY)
                     .encode().build().toUri();
 
         RequestEntity requestEntity = RequestEntity
@@ -49,19 +67,19 @@ public class BookAPIService {
             .build();
         
         try{
-            return restTemplate.exchange(requestEntity, BookListDTO.class).getBody();
+            NaverBooksDTO naverBooksDTO = restTemplate.exchange(requestEntity, NaverBooksDTO.class).getBody();
+            return modelMapper.map(naverBooksDTO, BooksDTO.class);
         }
         //naver api error
         catch(HttpStatusCodeException e){
-            //or e.getREsponseBodyAsString()
             throw new MyException(e.getMessage(), e.getStatusCode());
         }
-
     }
 
-    public BookInfoDTO searchBookInfo(String isbn){
+    @Override
+    public BookInfoDTO getBookInfo(String isbn){
         URI uri = UriComponentsBuilder
-                    .fromUriString("https://openapi.naver.com")
+                    .fromUriString(defaultUrl)
                     .path("/v1/search/book_adv.json")
                     .queryParam("d_isbn", isbn)
                     .encode().build().toUri();
@@ -72,22 +90,14 @@ public class BookAPIService {
             .header("X-Naver-Client-Secret", this.clientSecret)
             .build();
 
-
-        
         try{
-            ResponseEntity<BookInfoDTO> bookInfoDto = restTemplate.exchange(requestEntity, BookInfoDTO.class);
-            
-            return bookInfoDto.getBody();
+            NaverBookInfoDTO naverBookInfoDTO = restTemplate.exchange(requestEntity, NaverBookInfoDTO.class).getBody();
+            return modelMapper.map(naverBookInfoDTO, BookInfoDTO.class);
         }
         //naver api error
         catch(HttpStatusCodeException e){
-            //or e.getREsponseBodyAsString()
             throw new MyException(e.getMessage(), e.getStatusCode());
         }
     }
-    
-
-
-
     
 }

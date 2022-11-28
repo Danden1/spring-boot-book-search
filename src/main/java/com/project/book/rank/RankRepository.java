@@ -1,4 +1,4 @@
-package com.project.book.book;
+package com.project.book.rank;
 
 import java.util.List;
 

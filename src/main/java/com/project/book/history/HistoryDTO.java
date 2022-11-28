@@ -1,4 +1,4 @@
-package com.project.book.book;
+package com.project.book.history;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,7 +11,7 @@ import lombok.Data;
 @Data
 public class HistoryDTO {
 
-    HistoryDTO(List<History> histories){
+    public HistoryDTO(List<History> histories){
         this.histories = histories.stream().map(HistoryItem::new).collect(Collectors.toList());
     }
 
