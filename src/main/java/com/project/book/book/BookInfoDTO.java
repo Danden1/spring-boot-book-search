@@ -6,16 +6,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Setter
 @Getter
 @NoArgsConstructor
 public class BookInfoDTO {
 
     @ApiModelProperty("겸색 결과")
-    private BookInfoItem[] items;
+    private List<BookInfoItem> items;
 
     @Data
-    static class BookInfoItem {
+    public static class BookInfoItem {
         @ApiModelProperty("제목")
         private String title;
 

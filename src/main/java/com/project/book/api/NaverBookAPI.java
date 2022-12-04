@@ -31,19 +31,10 @@ public class NaverBookAPI implements BookAPI {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    private final ModelMapper modelMapper;
+    private final NaverMapper naverMapper;
 
-    public NaverBookAPI(ModelMapper modelMapper){
-        this.modelMapper = modelMapper;
-
-//        add mapping rule(NaverBooksDTO -> BooksDTO, NaverBookInfoDTO -> BookInfoDTO)
-//        PropertyMap<NaverBooksDTO, BooksDTO> bookMap = new PropertyMap<NaverBooksDTO, BooksDTO>() {
-//            protected void configure() {
-//
-//            }
-//        };
-//
-//        modelMapper.add(bookMap);
+    public NaverBookAPI(NaverMapper naverMapper) {
+        this.naverMapper = naverMapper;
     }
 
 
@@ -68,7 +59,7 @@ public class NaverBookAPI implements BookAPI {
         
         try{
             NaverBooksDTO naverBooksDTO = restTemplate.exchange(requestEntity, NaverBooksDTO.class).getBody();
-            return modelMapper.map(naverBooksDTO, BooksDTO.class);
+            return naverMapper.mapBooks(naverBooksDTO, BooksDTO.class);
         }
         //naver api error
         catch(HttpStatusCodeException e){
@@ -92,7 +83,7 @@ public class NaverBookAPI implements BookAPI {
 
         try{
             NaverBookInfoDTO naverBookInfoDTO = restTemplate.exchange(requestEntity, NaverBookInfoDTO.class).getBody();
-            return modelMapper.map(naverBookInfoDTO, BookInfoDTO.class);
+            return naverMapper.mapInfo(naverBookInfoDTO, BookInfoDTO.class);
         }
         //naver api error
         catch(HttpStatusCodeException e){

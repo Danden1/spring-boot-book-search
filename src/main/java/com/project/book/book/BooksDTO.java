@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -20,11 +22,11 @@ public class BooksDTO {
     private Integer display;
 
     @ApiModelProperty("겸색 결과 목록")
-    private BookListItem[] items;
+    private List<BookListItem> items;
 
 
     @Data
-    static class BookListItem {
+    static public class BookListItem {
         @ApiModelProperty("제목")
         private String title;
 
