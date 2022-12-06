@@ -31,10 +31,8 @@ public class KakaoMapper implements BookMapper{
                 s.getDocuments().stream().map(k -> {
                     BooksDTO.BookListItem i = modelMapper.map(k, BooksDTO.BookListItem.class);
                     String[] isbns = i.getIsbn().split(" ");
-                    if(isbns.length == 2)
-                        i.setIsbn(isbns[1]);
-                    else if(isbns.length == 1)
-                        i.setIsbn(isbns[0]);
+                    i.setIsbn(getIsbn(isbns));
+
                     return i;
                 }).toList();
 
@@ -48,18 +46,17 @@ public class KakaoMapper implements BookMapper{
     @Override
     public BookInfoDTO mapInfo(Object source, Class<BookInfoDTO> target) {
         KakaoBookInfoDTO s = (KakaoBookInfoDTO) source;
+
         List<BookInfoDTO.BookInfoItem> items =
                 s.getDocuments().stream().map(k -> {
                     BookInfoDTO.BookInfoItem i = modelMapper.map(k, BookInfoDTO.BookInfoItem.class);
                     String[] isbns = i.getIsbn().split(" ");
-                    if(isbns.length == 2)
-                        i.setIsbn(isbns[1]);
-                    else if(isbns.length == 1)
-                        i.setIsbn(isbns[0]);
+                    i.setIsbn(getIsbn(isbns));
+
                     return i;
                 }).toList();
 
-        BookInfoDTO bookInfo = modelMapper.map(s, target);
+        BookInfoDTO bookInfo = new BookInfoDTO();
         bookInfo.setItems(items);
 
         return bookInfo;
@@ -77,13 +74,27 @@ public class KakaoMapper implements BookMapper{
         return converter;
     }
 
+    private String getIsbn(String[] isbns){
+        if(isbns.length == 2)
+            return isbns[1];
+        else if(isbns.length == 1)
+            return isbns[0];
+
+        return null;
+    }
+
+    private String getDate(String date){
+        String[] dateSplit = date.split("-");
+        dateSplit[2] = dateSplit[2].substring(0,2);
+
+        return String.join("",dateSplit);
+    }
+
     private Converter<KakaoBooksDTO.Document, BooksDTO.BookListItem> getBookDocumentMapping(){
         Converter<KakaoBooksDTO.Document, BooksDTO.BookListItem> converter = context -> {
             BooksDTO.BookListItem item = new BooksDTO.BookListItem();
-            String[] dateSplit = context.getSource().getDatetime().split("-");
-            dateSplit[2] = dateSplit[2].substring(0,2);
 
-            item.setPubdate(String.join("", dateSplit));
+            item.setPubdate(getDate(context.getSource().getDatetime()));
             item.setAuthor(context.getSource().getAuthors().get(0));
             item.setTitle(context.getSource().getTitle());
             item.setIsbn(context.getSource().getIsbn());
@@ -100,15 +111,16 @@ public class KakaoMapper implements BookMapper{
 
         Converter<KakaoBookInfoDTO.Document, BookInfoDTO.BookInfoItem> converter = context -> {
             BookInfoDTO.BookInfoItem item = new BookInfoDTO.BookInfoItem();
-            String[] dateSplit = context.getSource().getDatetime().split("-");
-            dateSplit[2] = dateSplit[2].substring(0,2);
 
-            item.setPubdate(String.join("", dateSplit));
+            item.setPubdate(getDate(context.getSource().getDatetime()));
             item.setAuthor(context.getSource().getAuthors().get(0));
             item.setTitle(context.getSource().getTitle());
             item.setIsbn(context.getSource().getIsbn());
             item.setImage(context.getSource().getThumbnail());
             item.setPublisher(context.getSource().getPublisher());
+            item.setDescription(context.getSource().getContents());
+            item.setLink(context.getSource().getUrl());
+            item.setDiscount(Integer.toString(context.getSource().getSale_price()));
 
             return item;
         };

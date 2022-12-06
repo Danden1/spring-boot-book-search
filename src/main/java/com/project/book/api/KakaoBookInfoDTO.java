@@ -11,7 +11,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class KakaoBookInfoDTO {
-    private List<KakaoBooksDTO.Document> documents;
+    private List<KakaoBookInfoDTO.Document> documents;
     @Data
     static class Document{
         private String title;
@@ -22,5 +22,6 @@ public class KakaoBookInfoDTO {
         private Integer sale_price;
         private String publisher;
         private String thumbnail;
+        private String url;
     }
 }

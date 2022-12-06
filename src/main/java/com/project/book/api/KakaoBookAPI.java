@@ -51,6 +51,7 @@ public class KakaoBookAPI implements BookAPI{
 
         try{
             KakaoBookInfoDTO kakaoBookInfoDTO = restTemplate.exchange(requestEntity, KakaoBookInfoDTO.class).getBody();
+            
             return kakaoMapper.mapInfo(kakaoBookInfoDTO, BookInfoDTO.class);
         }
         //naver api error
@@ -78,8 +79,7 @@ public class KakaoBookAPI implements BookAPI{
             KakaoBooksDTO kakaoBooksDTO = restTemplate.exchange(requestEntity, KakaoBooksDTO.class).getBody();
             assert kakaoBooksDTO != null;
             kakaoBooksDTO.setStart(page, DISPLAY);
-            System.out.println(kakaoBooksDTO.getMeta());
-            System.out.println(kakaoBooksDTO.getDocuments());
+            
             return kakaoMapper.mapBooks(kakaoBooksDTO, BooksDTO.class);
         }
         //naver api error
