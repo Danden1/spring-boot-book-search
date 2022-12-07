@@ -5,7 +5,9 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import com.project.book.api.BookAPI;
+import com.project.book.api.KakaoBookAPI;
 import com.project.book.api.NaverBookAPI;
+import com.project.book.exception.MyException;
 import com.project.book.history.History;
 import com.project.book.history.HistoryDTO;
 import com.project.book.rank.Rank;
@@ -32,23 +34,20 @@ import lombok.RequiredArgsConstructor;
 public class BookSearchController {
     private final BookSearchService bookSearchService;
     private final JwtTokenProvider jwtTokenProvider;
-    private final NaverBookAPI bookAPIService;
 
     private final List<BookAPI> bookAPIs;
 
-    @GetMapping("/")
+    @GetMapping("/rank")
     public ResponseEntity<RankDTO> getMainPage(){
         List<Rank> rankList = bookSearchService.getRank();
         RankDTO rankDTO;
-
-
 
         rankDTO = new RankDTO(rankList);
 
         return new ResponseEntity<RankDTO>(rankDTO, HttpStatus.OK);
     }
 
-    @GetMapping("/search/history")
+    @GetMapping("/history")
     @ApiImplicitParam(name = "X-Auth-Token", value = "Access Token", required = true, allowEmptyValue = false, paramType = "header", dataTypeClass = String.class, example = "access_token")
     public ResponseEntity<HistoryDTO> getHistory(HttpServletRequest request){
         String email = jwtTokenProvider.getAccessTokenEmail(jwtTokenProvider.resolveToken(request));
@@ -59,11 +58,23 @@ public class BookSearchController {
         return new ResponseEntity<HistoryDTO>(historyDTO, HttpStatus.OK);
     }
 
-    @GetMapping("/search")
+    @GetMapping("/books")
     @ApiImplicitParam(name = "X-Auth-Token", value = "Access Token", required = false, allowEmptyValue = false, paramType = "header", dataTypeClass = String.class, example = "access_token")
     public ResponseEntity<BooksDTO> searchBookList(HttpServletRequest request, @RequestParam int page, @RequestParam String keyword){
         String email = jwtTokenProvider.getAccessTokenEmail(jwtTokenProvider.resolveToken(request));
-        BooksDTO bookListDTO = bookAPIService.getBooks(keyword, page);
+
+        int max_count = bookAPIs.size();
+        int count = 0;
+
+        while(count < max_count) {
+            try {
+                BooksDTO bookListDTO = bookAPIs.get(count).getBooks(keyword, page);
+
+                return new ResponseEntity<BooksDTO>(bookListDTO, HttpStatus.OK);
+            } catch (Exception e) {
+                count += 1;
+            }
+        }
 
         if(email != null){
             bookSearchService.saveKeyword(keyword, email);
@@ -71,16 +82,26 @@ public class BookSearchController {
 
         bookSearchService.saveRank(keyword);
 
-        return new ResponseEntity<BooksDTO>(bookListDTO, HttpStatus.OK);
-        
+        throw new MyException("API Error!", HttpStatus.SERVICE_UNAVAILABLE);
     }
 
-    @GetMapping("/search/book")
+    @GetMapping("/book")
     @ApiImplicitParam(name = "X-Auth-Token", value = "Access Token", required = false, allowEmptyValue = false, paramType = "header", dataTypeClass = String.class, example = "access_token")
     public ResponseEntity<BookInfoDTO> searchBookInfo(@RequestParam String isbn){
-        BookInfoDTO bookInfoDTO = bookAPIService.getBookInfo(isbn);
+        int max_count = bookAPIs.size();
+        int count = 0;
 
-        return new ResponseEntity<BookInfoDTO>(bookInfoDTO, HttpStatus.OK);
+        while(count < max_count) {
+            try {
+                BookInfoDTO bookInfoDTO = bookAPIs.get(count).getBookInfo(isbn);
+
+                return new ResponseEntity<BookInfoDTO>(bookInfoDTO, HttpStatus.OK);
+            } catch (Exception e) {
+                count += 1;
+            }
+        }
+
+        throw new MyException("API Error!", HttpStatus.SERVICE_UNAVAILABLE);
 
     }
 

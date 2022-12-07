@@ -7,6 +7,7 @@ import com.project.book.book.BooksDTO;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,7 @@ import com.project.book.exception.MyException;
 
 
 @Component
+@Order(1)
 @Service
 public class NaverBookAPI implements BookAPI {
 

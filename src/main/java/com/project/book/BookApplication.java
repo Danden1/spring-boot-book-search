@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Bean;
 import org.modelmapper.ModelMapper;
 
 @SpringBootApplication
-// @RequiredArgsConstructor
 public class BookApplication {
 
 	@Bean
