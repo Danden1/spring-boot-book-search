@@ -8,6 +8,12 @@
 <img src="https://img.shields.io/badge/Jenkins-D24939?style=for-the-badge&logo=Jenkins&logoColor=white">
 <img src="https://img.shields.io/badge/Docker-007396?style=for-the-badge&logo=docker&logoColor=white">
 
+![img.png](img/img.png)
+
+
+책 검색을 위해 naver와 kakao의 검색 api를 이용한다.
+
+만약에 naver의 api에 오류가 발생한다면, kakao를 이용하여 결과를 반환한다.
 
 
 ### 구현 기능
@@ -27,3 +33,4 @@
 - 인기 검색어 조회 기능
 - 사용자 히스토리 조회 기능
 - 책 상세 정보 검색 기능(네이버 검색 api 활용)
+
