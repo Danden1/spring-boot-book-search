@@ -9,8 +9,13 @@ import org.springframework.context.annotation.Bean;
 
 
 import org.modelmapper.ModelMapper;
+import org.springframework.scheduling.annotation.EnableAsync;
+
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 @SpringBootApplication
+@EnableAsync
 public class BookApplication {
 
 	@Bean
@@ -19,6 +24,11 @@ public class BookApplication {
 		modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
 		return modelMapper;
+	}
+
+	@Bean
+	public BlockingQueue<String> blockingQueue(){
+		return new LinkedBlockingQueue<>();
 	}
 
 	public static void main(String[] args) {

@@ -27,13 +27,12 @@ public class BookSearchService {
     final private HistoryRepository historyRepository;
     final private RankRepository rankRepository;
     final private UserRepository userRepository;
-    final private JwtTokenProvider jwtTokenProvider;
     
     @Value("${rank.keyword-number}")
     private int keywordNumber;
 
 
-    public void saveKeyword(String keyword, String email){
+    public void saveKeyword(String keyword, String email, LocalDateTime time){
         MyUser user = userRepository.findByEmail(email);
         History history;
         
@@ -45,11 +44,11 @@ public class BookSearchService {
         if(history == null){
             history = new History();
             history.setKeyword(keyword);
-            history.setSearchTime(LocalDateTime.now());
+            history.setSearchTime(time);
             history.setUser(user);
         }
         else{
-            history.setSearchTime(LocalDateTime.now());
+            history.setSearchTime(time);
         }
         historyRepository.save(history);
 
